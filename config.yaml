@@ -1,0 +1,31 @@
+#model settings
+in_channels: 96                           #number of channels in residual blocks
+width: 64                                  #width of input video/frame
+height: 64                                 #height of input video/frame
+encoder_nblocks: 5                         #number of residual blocks in the encoder
+decoder_nblocks: 40                        #number of residual blocks in the decoder
+
+#dataset settings
+dataset_path: Lifeact_train_step2_VSR_centernorm.h5          #dataset path
+patch_size: 128                             #patch size for training, should be the same as width/height above
+num_workers: 0                             #number of threads in the dataloader
+
+
+#training settings
+device: !!str 7                            #GPU ids used for training
+batchsize: 16                              #batchsize
+checkpoint_folder: checkpt/Lifeact_step2_VSR_centernorm       #the folder to save checkpoint
+checkpoint_name: checkptx2.pt                #filename of checkpoint
+hot_start: 0                              #0 for training from scratch, 1 for resume from a checkpoint
+hot_start_checkpt: checkpt/Lifeact_step8_VSR/checkptbest.pt      #checkpoint used to resume training, if hot_start=0, this is ignored
+epoch: 36000                               #36000number of training epochs, set to a large number and manually stop training if needed
+stage1: 30000                              #17500number of iterations for stage 1 in our paper, don't change if not sure what it is
+stage2: 80000                              #2800number of iterations for stage 2 in our paper, don't change if not sure what it is
+N_save_checkpt: 300                       #840save checkpoint every N_save_checkpt iterations
+save_samples: 1                            #set 1 to save sample images every N_save_checkpt iterations, set 0 otherwise
+
+#logging settings
+use_wandb: 0                               #if you use wandb ( https://wandb.ai/ ), you can set this to 1 and input your project name and username below
+project: your_project_name                 #wandb project name
+entity: your_wandb_username                #wandb user name
+run_name: your_run_name                    #the name of a run
