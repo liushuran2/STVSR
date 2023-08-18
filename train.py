@@ -7,14 +7,11 @@ import warnings
 import math
 from torch.utils.tensorboard import SummaryWriter
 warnings.filterwarnings("ignore")
-num_dropout_ensembles = 8
 parser = argparse.ArgumentParser(description='Input a config file.')
 parser.add_argument('--config', help='Config file path')
 args = parser.parse_args()
 f = open(args.config)
 config = yaml.load(f, Loader=yaml.FullLoader)
-
-os.environ["CUDA_VISIBLE_DEVICES"] = '4' # 1:kernel5 3：kernel11 4:step2_centernorm
 
 import numpy as np
 from torch.utils.data import DataLoader
@@ -24,9 +21,7 @@ import models
 import torch
 import loss
 
-#if config['use_wandb']:
- #   import wandb
-  #  wandb.init(project=config['project'], entity=config['entity'], name=config['run_name'])
+num_dropout_ensembles = 8
 
 os.makedirs(config['checkpoint_folder'], exist_ok=True)
 model = torch.nn.DataParallel(models.mana(config,is_training=True)).cuda()
