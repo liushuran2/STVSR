@@ -1,11 +1,8 @@
 import numpy as np
-import matplotlib.pyplot as plt
-import cv2
-from skimage import io
 import torch
 
 
-def interval_confidence(y_true, mu_list, b_list, yips, num_dropout_ensembles=1):
+def inter_confidence(y_true, mu_list, b_list, yips, num_dropout_ensembles=1):
     len_list = num_dropout_ensembles
     mu = np.mean(mu_list,axis=0)
     mu_stack = np.tile(mu, (len_list, 1, 1))
@@ -18,7 +15,7 @@ def laplace_cdf(x, mu_list, b_list):
     return np.mean(cdf, axis=0)
 def reliability_diagram(y_true, mu_list, b_list, yips=0.01, n_bins=50):
     y_true = y_true.squeeze(0).squeeze(0)
-    confidence = interval_confidence(y_true, mu_list, b_list, yips)
+    confidence = inter_confidence(y_true, mu_list, b_list, yips)
     y_pred = np.mean(mu_list, axis=0)
     accuracy = np.logical_and(y_pred>y_true-yips, y_pred<y_true+yips)
     accuracy = accuracy.astype(int)
@@ -40,12 +37,9 @@ def reliability_diagram(y_true, mu_list, b_list, yips=0.01, n_bins=50):
             bin_corrects[i] = np.sum(accuracy[bin_indices_i])
             bin_totals[i] = len(bin_indices_i)
             bin_confidences[i] = np.sum(confidence[bin_indices_i])
-    
-    
-
     return bin_confidences, bin_corrects, bin_totals
 
-def diag(n_bins, confidence, accuracy):
+def diag_torch(n_bins, confidence, accuracy):
     bin_corrects = torch.zeros((n_bins)).float().cuda()
     bin_confidences = torch.zeros((n_bins)).float().cuda()
     bin_total = torch.zeros((n_bins)).float().cuda()
@@ -65,3 +59,11 @@ def diag(n_bins, confidence, accuracy):
     ECE = torch.mean(ECE)
 
     return ECE
+def interval_confidence(mu_list, b_list, num_dropout_ensembles, yips):
+    len_list = num_dropout_ensembles
+    mu = np.mean(mu_list,axis=0)
+    mu_stack = np.tile(mu, (len_list, 1, 1))
+    mu_stack = np.stack(mu_stack, axis=0)
+    left = laplace_cdf(mu_stack - yips, mu_list, b_list)
+    right = laplace_cdf(mu_stack + yips, mu_list, b_list)
+    return right - left

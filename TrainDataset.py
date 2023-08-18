@@ -59,7 +59,7 @@ class TrainDataset(Dataset):
             lr, hr = self.random_horizontal_flip(lr, hr)
             lr, hr = self.random_vertical_flip(lr, hr)
             lr, hr = self.random_rotate_90(lr, hr)
-            gt = hr[3, :, :, :] #这里要改
+            gt = hr[3, :, :, :]
             return lr.astype(np.float32), gt.astype(np.float32)
 
     def __len__(self):

@@ -64,7 +64,6 @@ class FCAB(nn.Module):
         conv = self.conv2(conv)
         conv = self.gelu(conv)
         att = self.fca(conv)
-        #att = conv
         return att + x
     
 class FCABs(nn.Module):
@@ -79,6 +78,9 @@ class FCABs(nn.Module):
             conv = self.FCABs[i](conv)
         conv = conv + input
         return conv
+
+
+
 
         
         
